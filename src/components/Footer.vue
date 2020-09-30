@@ -3,8 +3,35 @@ import { mapMutations } from "vuex";
 export default {
   name: "Footer",
   props: ["todos"],
+  data() {
+    return {
+      selectedAll: true,
+      selectedActive: false,
+      selectedCompleted: false,
+    };
+  },
   methods: {
     ...mapMutations(["clearCompleted", "mutateFilter"]),
+
+    selected(id) {
+      switch (id) {
+        case "all":
+          this.selectedAll = true;
+          this.selectedActive = false;
+          this.selectedCompleted = false;
+          break;
+        case "active":
+          this.selectedAll = false;
+          this.selectedActive = true;
+          this.selectedCompleted = false;
+          break;
+        case "completed":
+          this.selectedAll = false;
+          this.selectedActive = false;
+          this.selectedCompleted = true;
+          break;
+      }
+    },
   },
 };
 </script>
@@ -15,15 +42,33 @@ export default {
       <strong>{{ todos.filter((t) => !t.completed).length }} item left</strong>
     </span>
     <ul class="filters">
-      <li @click="mutateFilter({ filter: `SHOW_ALL` })">
+      <li
+        :class="{ selected: selectedAll }"
+        @click="
+          mutateFilter({ filter: `SHOW_ALL` });
+          selected(`all`);
+        "
+      >
         <a> All </a>
       </li>
 
-      <li @click="mutateFilter({ filter: `SHOW_ACTIVE` })">
+      <li
+        :class="{ selected: selectedActive }"
+        @click="
+          mutateFilter({ filter: `SHOW_ACTIVE` });
+          selected(`active`);
+        "
+      >
         <a> Active </a>
       </li>
 
-      <li @click="mutateFilter({ filter: `SHOW_COMPLETED` })">
+      <li
+        :class="{ selected: selectedCompleted }"
+        @click="
+          mutateFilter({ filter: `SHOW_COMPLETED` });
+          selected(`completed`);
+        "
+      >
         <a> Completed </a>
       </li>
     </ul>
@@ -98,7 +143,7 @@ html .clear-completed:active {
   text-decoration: underline;
 }
 
-.filters li:focus {
+.filters li.selected {
   border-color: rgba(175, 47, 47, 0.2);
 }
 .filters li {
